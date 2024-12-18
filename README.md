@@ -5,4 +5,4 @@ Aplicación web para charlas privadas y temporales. Solo necesitas un nombre de 
 
 ### Instalación
 1. Clona el repositorio.
-2. Ejecuta `go mod tidy && go run .`.
+2. Ejecuta `go mod tidy && go run .`
