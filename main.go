@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	err := loadconfig.New(loadconfig.TYPE_FILE_DOT_ENV, loadconfig.ENV_LOCAL).Load()
+	err := loadconfig.New(loadconfig.TYPE_FILE_DOT_ENV, loadconfig.ENV_DEFAULT).Load()
 	if err != nil {
 		panic(err)
 	}
