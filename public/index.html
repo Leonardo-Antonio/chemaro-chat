@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="flex justify-center items-center h-screen">
+        <div>
+            <h1 class="text-4xl">Private Chat</h1>
+            <div>
+                <h3>Código de chat: </h3>
+                <section>
+                    <div>
+                        <input type="text" id="code" placeholder="Código de chat">
+                    </div>
+                    <div>
+                        <button id="send_code">Abrir</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const code = document.getElementById("send_code");
+            code.addEventListener("click", async function (event) {
+                const response = await fetch(`/api/v1/chat/open/${document.getElementById("code").value}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+
+                const data = await response.json();
+                if (!data.success) {
+                    alert(data.message);
+                }
+
+                if (data.action === "redirect") {
+                    window.location.href = data.data.redirect;
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
