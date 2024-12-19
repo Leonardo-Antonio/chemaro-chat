@@ -22,6 +22,9 @@ func main() {
 	}
 	r := mux.NewRouter()
 
+	assetsDir := http.Dir("./assets/")
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(assetsDir)))
+
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "public/index.html")
 	})
