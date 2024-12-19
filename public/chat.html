@@ -111,19 +111,60 @@
             font-size: 2.4rem;
         }
 
+        @media only screen and (max-width: 600px) {
+            .container {
+                margin: 1rem;
+            }
+
+            .header {
+                height: 20%;
+            }
+
+            .title {
+                color: white;
+                font-size: 1.8rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .container_header {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .container_buttons_extra_headers {
+                width: 100%;
+                justify-content: end;
+            }
+        }
     </style>
 </head>
 
 <body>
     <div id="secret" class="container hidden">
         <section class="header flex justify-between items-center">
-            <div class="flex items-center gap-x-3">
-                <button id="btn_back" class="rounded-full p-1 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-green-800 dark:text-gray-300 p-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgb(201, 195, 195); --darkreader-inline-fill: #e8e6e3;" data-darkreader-inline-fill=""><path d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z"></path></svg>
-                </button>
-                <h1 class="title">Chat [ <strong id="code"></strong> ]</h1>
+            <div class="container_header flex items-center gap-x-3">
+                <div>
+                    <button id="btn_back"
+                        class="rounded-full p-1 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:bg-green-800 dark:text-gray-300 p-2.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgb(201, 195, 195); --darkreader-inline-fill: #e8e6e3;"
+                            data-darkreader-inline-fill="">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div>
+                    <h1 class="title">Chat [ <strong id="code"></strong> ]</h1>
+                </div>
             </div>
-            <div class="flex justify-end items-center">
+            <div class="container_buttons_extra_headers flex justify-end items-center">
                 <button id="btn_share" type="button"
                     class="flex items-center justify-center focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -174,9 +215,9 @@
         } else {
             window.location.href = "/";
         }
-        
+
         document.title = `Chemaro | Chat (${codeDecoded.length != 0 ? codeDecoded[0] : 'Error'})`;
-        document.getElementById("code").innerText = codeDecoded.length != 0 ? codeDecoded[0] : 'Error';
+        document.getElementById("code").innerText = codeDecoded.length != 0 ? shortNameGroupId(codeDecoded[0]) : 'Error';
 
         showPreviewMessages(code, uuid);
         const socket = new WebSocket('/api/v1/chat/' + code);
@@ -224,6 +265,9 @@
 
                 document.getElementById("container_messages").appendChild(ele);
             });
+
+            const containermsgs = document.getElementById("container_messages")
+            containermsgs.scrollTop = containermsgs.scrollHeight;
         };
 
         // Evento de error
@@ -291,6 +335,17 @@
 
             document.getElementById("container_messages").appendChild(ele);
         });
+
+        const containermsgs = document.getElementById("container_messages")
+        containermsgs.scrollTop = containermsgs.scrollHeight;
+    }
+
+    function shortNameGroupId(code) {
+        if (code.length <= 10) {
+            return code;
+        }
+
+        return code.substring(0, 6) + "..." + code[code.length - 1];
     }
 </script>
 
