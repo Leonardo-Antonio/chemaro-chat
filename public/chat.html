@@ -16,12 +16,12 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            height: 100vh;
+            height: 100%;
         }
 
         .container {
             background: rgb(69, 48, 48);
-            height: 90vh;
+            height: 80vh;
             width: 80%;
             display: flex;
             flex-direction: column;
@@ -118,6 +118,10 @@
 
             .header {
                 height: 20%;
+            }
+
+            .messages {
+                height: 70%;
             }
 
             .title {
@@ -259,7 +263,7 @@
                 const ele = document.createElement("div");
                 ele.innerHTML = `
                     <div class="${message.mymessage ? 'mymessage' : 'othermessage'}">
-                        <span>${message.message}</span>
+                        <span class="${message.mymessage ? 'text-black' : 'text-white'}">${message.message}</span>
                     </div>
                 `;
 
@@ -329,7 +333,7 @@
             const ele = document.createElement("div");
             ele.innerHTML = `
                 <div class="${message.mymessage ? 'mymessage' : 'othermessage'}">
-                    <span>${message.message}</span>
+                    <span class="${message.mymessage ? 'text-black' : 'text-white'}">${message.message}</span>
                 </div>
             `;
 
