@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -31,7 +32,10 @@ func main() {
 
 	r.HandleFunc("/api/v1/chat/open/{code}", func(w http.ResponseWriter, r *http.Request) {
 		code := mux.Vars(r)["code"]
+		password := r.URL.Query().Get("psw")
 		uuid := uuid.New().String()
+
+		groupId := base64.StdEncoding.EncodeToString([]byte(code + "__###__" + password))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]any{
@@ -40,7 +44,7 @@ func main() {
 			"action":  "redirect",
 			"data": map[string]any{
 				"code":     code,
-				"redirect": "/chat?code=" + code + "&uuid=" + uuid,
+				"redirect": "/chat?code=" + groupId + "&uuid=" + uuid,
 			},
 		})
 	}).Methods(http.MethodPost)
@@ -63,6 +67,18 @@ func main() {
 			},
 		})
 	}).Methods(http.MethodGet)
+
+	r.HandleFunc("/api/v1/chat/{code}/messages", func(w http.ResponseWriter, r *http.Request) {
+		code := mux.Vars(r)["code"]
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		memory.Delete(code)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": true,
+			"message": "ok",
+			"action":  "reload",
+		})
+	}).Methods(http.MethodDelete)
 
 	port := loadconfig.GetEnv("APP_PORT").String()
 	log.Printf("Listening on port http://0.0.0.0:%s", port)

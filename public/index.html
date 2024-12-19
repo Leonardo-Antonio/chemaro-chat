@@ -6,22 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Document</title>
+
+    <style>
+        body {
+            background-color: #181a1b;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .container_form {
+            background: rgb(69, 48, 48);
+            width: 60%;
+            height: 400px;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="flex justify-center items-center h-screen">
-        <div>
-            <h1 class="text-4xl">Private Chat</h1>
-            <div>
-                <h3>Código de chat: </h3>
-                <section>
-                    <div>
-                        <input type="text" id="code" placeholder="Código de chat">
-                    </div>
-                    <div>
-                        <button id="send_code">Abrir</button>
-                    </div>
-                </section>
+    <div class="flex justify-center items-center h-screen w-full">
+        <div class="container_form p-6">
+            <h1 class="text-4xl text-white text-center">Private Chat</h1>
+            <div class="flex gap-4 flex-col">
+                <div>
+                    <h3 class="text-[#aea2a2] text-sm">Código de chat: </h3>
+                    <section>
+                        <div>
+                            <input type="text" id="code"
+                                class="py-3 px-4 block w-full border-gray-200 rounded-lg text-md text-white focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                placeholder="Código de chat...">
+                        </div>
+                    </section>
+                </div>
+    
+                <div>
+                    <h3 class="text-[#aea2a2] text-sm">Contraseña: </h3>
+                    <section>
+                        <div>
+                            <input type="password" id="password"
+                                class="py-3 px-4 block w-full border-gray-200 rounded-lg text-md text-white focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                placeholder="Contraseña...">
+                        </div>
+                    </section>
+                </div>
+    
+                <div>
+                    <button id="send_code" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">Abrir</button>
+                </div>
             </div>
         </div>
     </div>
@@ -30,11 +66,19 @@
         window.onload = function () {
             const code = document.getElementById("send_code");
             code.addEventListener("click", async function (event) {
-                const response = await fetch(`/api/v1/chat/open/${document.getElementById("code").value}`, {
+                const code = document.getElementById("code")?.value ?? "";
+                const password = document.getElementById("password")?.value ?? "";
+                
+                if (code.length === 0 && password.length === 0) {
+                    alert("Debes ingresar un código y una contraseña para ingresar o crear");
+                    return;
+                }
+                const response = await fetch(`/api/v1/chat/open/${code}?psw=${password}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    body: JSON.stringify({ password: password }),
                 })
 
                 const data = await response.json();
