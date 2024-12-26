@@ -133,6 +133,16 @@
             border-radius: 10px;
         }
 
+        .mymessage_file img {
+            padding: .3rem;
+            background-color: yellow;
+        }
+
+        .othermessage_file img {
+            padding: .3rem;
+            background-color: blue;
+        }
+
         .title {
             color: white;
             font-size: 2.4rem;
@@ -142,6 +152,7 @@
             body {
                 height: 100%;
             }
+
             .container {
                 margin: 1rem;
             }
@@ -225,10 +236,22 @@
                 <input type="text" id="message"
                     class="py-3 px-4 block w-full border-gray-200 rounded-lg text-md text-white focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                     placeholder="Escribe tu mensaje...">
-                <button type="button" id="btn-send"
-                    class="py-3 px-4 inline-flex items-center gap-x-2 text-md font-semibold font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
-                    Enviar
-                </button>
+                <div class="flex justify-center items-center gap-x-4">
+                    <input type="file" id="upload_files" class="hidden" multiple>
+                    <button type="button" id="btn_upload_files"
+                        class="py-3 px-4 inline-flex items-center gap-x-2 text-md font-semibold font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgb(255, 253, 253); --darkreader-inline-fill: #e8e6e3;"
+                            data-darkreader-inline-fill="">
+                            <path d="M11 15h2V9h3l-4-5-4 5h3z"></path>
+                            <path d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"></path>
+                        </svg>
+                    </button>
+                    <button type="button" id="btn-send"
+                        class="py-3 px-4 inline-flex items-center gap-x-2 text-md font-semibold font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                        Enviar
+                    </button>
+                </div>
             </div>
         </section>
     </div>
@@ -269,13 +292,13 @@
         });
 
 
-        const sendMessage = (message) => {
+        const sendMessage = (message, type = "text") => {
             if (message === "") {
                 return;
             }
 
             document.getElementById("message").value = "";
-            socket.send(JSON.stringify({ userId: uuid, message: message }));
+            socket.send(JSON.stringify({ userId: uuid, message: message, type: type }));
         }
 
         // Evento de conexión establecida
@@ -291,11 +314,28 @@
             document.getElementById("container_messages").innerHTML = "";
             response.forEach((message) => {
                 const ele = document.createElement("div");
-                ele.innerHTML = `
-                    <div class="${message.mymessage ? 'mymessage' : 'othermessage'}">
-                        <span class="${message.mymessage ? 'text-black' : 'text-white'}">${message.message}</span>
-                    </div>
-                `;
+                if (message.type === "text") {
+                    ele.innerHTML = `
+                        <div class="${message.mymessage ? 'mymessage' : 'othermessage'}">
+                            <span class="${message.mymessage ? 'text-black' : 'text-white'}">${message.message}</span>
+                        </div>
+                    `;
+                } else if (message.type.includes("image")) {
+                    ele.innerHTML = `
+                        <div class="${message.mymessage ? 'mymessage mymessage_file' : 'othermessage othermessage_file'}">
+                            <a href="${message.message}" target="_blank">
+                                <img src="${message.message}" alt="Imagen" class="w-[14rem]">
+                            </a>
+                        </div>
+                    `;
+                } else if (message.type.includes("video")) {
+                    ele.innerHTML = `
+                        <div class="${message.mymessage ? 'mymessage mymessage_file' : 'othermessage othermessage_file'}">
+                            <video src="${message.message}" controls class="w-[14rem]"></video>
+                        </div>
+                    `;
+                }
+                
 
                 document.getElementById("container_messages").appendChild(ele);
             });
@@ -348,6 +388,30 @@
 
         document.getElementById("btn_back").addEventListener("click", function (event) {
             window.location.href = "/";
+        });
+
+        const upload_files = document.getElementById("upload_files");
+        document.getElementById("btn_upload_files").addEventListener("click", function (event) {
+            upload_files.click();
+        });
+
+        upload_files.addEventListener("change", function (event) {
+            for (let i = 0; i < event.target.files.length; i++) {
+                const formData = new FormData();
+                formData.append("file", event.target.files[i]);
+                fetch('/api/v1/upload/files', {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log(data);
+                        sendMessage(data.data.url, data.data.type);
+                    })
+                    .catch((error) => {
+                        alert("Error al subir el archivo");
+                    });
+            }
         });
     }
 

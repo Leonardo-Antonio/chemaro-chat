@@ -4,8 +4,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Leonardo-Antonio/chemaro/db/memory"
@@ -75,6 +80,13 @@ func main() {
 		code := mux.Vars(r)["code"]
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		messages := memory.Get(code)
+		for _, message := range messages {
+			if strings.Contains(message.Type, "image") || strings.Contains(message.Type, "video") {
+				os.Remove(message.Message)
+			}
+		}
+
 		memory.Delete(code)
 		json.NewEncoder(w).Encode(map[string]any{
 			"success": true,
@@ -82,6 +94,49 @@ func main() {
 			"action":  "reload",
 		})
 	}).Methods(http.MethodDelete)
+
+	r.HandleFunc("/api/v1/upload/files", func(w http.ResponseWriter, r *http.Request) {
+		// obtener imagen que llega en formulario "file"
+		file, handler, err := r.FormFile("file")
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer file.Close()
+		name := handler.Filename
+		contentType := handler.Header.Get("Content-Type")
+		size := handler.Size
+		ext := filepath.Ext(name)
+		filename := fmt.Sprintf("%s%s", uuid.New().String(), ext)
+
+		pathFiles := path.Join("assets", "temp")
+		fullpath := path.Join(pathFiles, filename)
+		tempFile, err := os.Create(fullpath)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer tempFile.Close()
+
+		_, err = io.Copy(tempFile, file)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": true,
+			"message": "ok",
+			"data": map[string]any{
+				"url":  fullpath,
+				"name": name,
+				"type": contentType,
+				"size": size,
+			},
+		})
+	}).Methods(http.MethodPost)
 
 	port := loadconfig.GetEnv("APP_PORT").String()
 	log.Printf("Listening on port http://0.0.0.0:%s", port)
@@ -130,6 +185,7 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		var msg struct {
 			UserId  string `json:"userId"`
 			Message string `json:"message"`
+			Type    string `json:"type"`
 		}
 		err = json.Unmarshal(message, &msg)
 		if err != nil {
@@ -141,6 +197,7 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 			Id:        uuid.New().String(),
 			UserId:    msg.UserId,
 			Message:   msg.Message,
+			Type:      msg.Type,
 			CreatedAt: uint64(time.Now().UTC().UnixMilli()),
 		})
 
