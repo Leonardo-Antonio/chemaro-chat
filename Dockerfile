@@ -8,4 +8,6 @@ RUN go mod tidy
 
 RUN go build -o main .
 
+ENV PORT=9000
+
 CMD ["./main"]

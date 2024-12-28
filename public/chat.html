@@ -10,27 +10,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chemaro - Chat Privado Seguro y Efímero</title> <!-- Meta Description -->
+    <title>Goido - Chat Privado Seguro y Efímero</title> <!-- Meta Description -->
     <meta name="description"
-        content="Chemaro es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
+        content="Goido es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
     <!-- Meta Keywords -->
     <meta name="keywords"
-        content="Chemaro, chat privado, chat seguro, chat efímero, chat en memoria RAM, chat temporal">
+        content="Goido, chat privado, chat seguro, chat efímero, chat en memoria RAM, chat temporal">
     <!-- Meta Author -->
-    <meta name="author" content="Equipo Chemaro"> <!-- Open Graph / Facebook -->
+    <meta name="author" content="Equipo Goido"> <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://chemaro.com">
-    <meta property="og:title" content="Chemaro - Chat Privado Seguro y Efímero">
+    <meta property="og:url" content="https://goido.fun">
+    <meta property="og:title" content="Goido - Chat Privado Seguro y Efímero">
     <meta property="og:description"
-        content="Chemaro es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
-    <meta property="og:image" content="https://chemaro.com/images/og-image.jpg"> <!-- Twitter -->
+        content="Goido es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
+    <meta property="og:image" content="https://goido.fun/images/og-image.jpg"> <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://chemaro.com">
-    <meta name="twitter:title" content="Chemaro - Chat Privado Seguro y Efímero">
+    <meta name="twitter:url" content="https://goido.fun">
+    <meta name="twitter:title" content="Goido - Chat Privado Seguro y Efímero">
     <meta name="twitter:description"
-        content="Chemaro es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
-    <meta name="twitter:image" content="https://chemaro.com/images/twitter-image.jpg"> <!-- Canonical Link -->
-    <link rel="canonical" href="https://chemaro.com"> <!-- Favicon -->
+        content="Goido es una app web para chat privado que no guarda ningún tipo de información personal de manera persistente. Toda la información se almacena temporalmente en la memoria RAM y se elimina después de un tiempo o a solicitud de los usuarios.">
+    <meta name="twitter:image" content="https://goido.fun/images/twitter-image.jpg"> <!-- Canonical Link -->
+    <link rel="canonical" href="https://goido.fun"> <!-- Favicon -->
     <link rel="icon" href="/assets/web/favicon-32.png" type="image/x-icon"> <!-- Additional SEO Tags -->
     <meta name="robots" content="index, follow">
     <style>
@@ -262,18 +262,14 @@
         const uuid = new URLSearchParams(window.location.search).get("uuid");
         const codeDecoded = atob(code)?.split("__###__")
 
-        let input_password = prompt("Ingrese la contraseña, por favor.", "");
-        if (input_password === null || input_password === "") {
-            window.location.href = "/";
-        }
 
-        if (codeDecoded.length == 2 && codeDecoded[1] === input_password) {
+        if (codeDecoded.length == 2) {
             document.getElementById("secret").classList.remove("hidden");
         } else {
             window.location.href = "/";
         }
 
-        document.title = `Chemaro - Chat Privado Seguro y Efímero | Chat (${codeDecoded.length != 0 ? codeDecoded[0] : 'Error'})`;
+        document.title = `Goido - Chat Privado Seguro y Efímero | Chat (${codeDecoded.length != 0 ? codeDecoded[0] : 'Error'})`;
         document.getElementById("code").innerText = codeDecoded.length != 0 ? shortNameGroupId(codeDecoded[0]) : 'Error';
 
         showPreviewMessages(code, uuid);

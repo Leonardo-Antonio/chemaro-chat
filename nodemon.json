@@ -10,6 +10,6 @@
 		"../gen4-package-core/*.go"
 	],
 	"ext": "go,json",
-	"exec": "go run *.go",
+	"exec": "PORT=9001 go run *.go",
 	"signal": "SIGTERM"
 }
