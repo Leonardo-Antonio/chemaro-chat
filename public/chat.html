@@ -272,6 +272,7 @@
         document.title = `Goido - Chat Privado Seguro y Efímero | Chat (${codeDecoded.length != 0 ? codeDecoded[0] : 'Error'})`;
         document.getElementById("code").innerText = codeDecoded.length != 0 ? shortNameGroupId(codeDecoded[0]) : 'Error';
 
+        showPreviewMessages(code, uuid);
         const socket = new WebSocket('/api/v1/chat/' + code);
         const message = document.getElementById("message");
         message.addEventListener("keyup", function (event) {
