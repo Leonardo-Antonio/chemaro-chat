@@ -15,6 +15,7 @@ func main() {
 
 	router.Pages(r)
 	router.API(r)
+	router.APIReports(r)
 	router.APIWs(r)
 
 	port := os.Getenv("PORT")
