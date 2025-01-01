@@ -2,6 +2,9 @@ package memory
 
 import "sync"
 
+type Storage struct {
+	Pool map[string][]Message
+}
 type Message struct {
 	Id        string `json:"id"`
 	UserId    string `json:"userId"`
@@ -11,6 +14,6 @@ type Message struct {
 }
 
 var (
-	storage = make(map[string][]Message)
+	storage = &Storage{}
 	mutex   = &sync.RWMutex{}
 )

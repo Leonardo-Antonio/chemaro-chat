@@ -2,6 +2,9 @@ package memory
 
 func Set(groupId string, message Message) {
 	mutex.Lock()
-	storage[groupId] = append(storage[groupId], message)
+	if storage.Pool == nil {
+		storage.Pool = make(map[string][]Message)
+	}
+	storage.Pool[groupId] = append(storage.Pool[groupId], message)
 	mutex.Unlock()
 }
