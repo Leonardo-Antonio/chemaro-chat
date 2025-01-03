@@ -1,10 +1,12 @@
 package memory
 
-func Set(groupId string, message Message) {
-	mutex.Lock()
-	if storage.Pool == nil {
-		storage.Pool = make(map[string][]Message)
+import "github.com/Leonardo-Antonio/chemaro/dto"
+
+func (_s *service) Set(groupId string, message dto.Message) {
+	_s.mutex.Lock()
+	if _s.storage.Pool == nil {
+		_s.storage.Pool = make(map[string][]dto.Message)
 	}
-	storage.Pool[groupId] = append(storage.Pool[groupId], message)
-	mutex.Unlock()
+	_s.storage.Pool[groupId] = append(_s.storage.Pool[groupId], message)
+	_s.mutex.Unlock()
 }

@@ -7,7 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Leonardo-Antonio/chemaro/db/memory"
+	"github.com/Leonardo-Antonio/chemaro/db"
+	"github.com/Leonardo-Antonio/chemaro/dto"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
@@ -35,14 +36,14 @@ func DeleteMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	messages := memory.Get(code)
+	messages := db.DB.Get(code)
 	for _, message := range messages {
 		if strings.Contains(message.Type, "image") || strings.Contains(message.Type, "video") {
 			os.Remove(message.Message)
 		}
 	}
 
-	memory.Delete(code)
+	db.DB.Delete(code)
 	json.NewEncoder(w).Encode(map[string]any{
 		"success": true,
 		"message": "ok",
@@ -54,9 +55,9 @@ func GetMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	code := mux.Vars(r)["code"]
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	data := memory.Get(code)
+	data := db.DB.Get(code)
 	if data == nil {
-		data = []memory.Message{}
+		data = []dto.Message{}
 	}
 
 	json.NewEncoder(w).Encode(map[string]any{

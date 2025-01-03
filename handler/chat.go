@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Leonardo-Antonio/chemaro/db/memory"
+	"github.com/Leonardo-Antonio/chemaro/db"
+	"github.com/Leonardo-Antonio/chemaro/dto"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -62,7 +63,7 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 			continue
 		}
 
-		memory.Set(groupID, memory.Message{
+		db.DB.Set(groupID, dto.Message{
 			Id:        uuid.New().String(),
 			UserId:    msg.UserId,
 			Message:   msg.Message,
@@ -75,9 +76,9 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *WebSocketHandler) forwardMessages(groupID string) {
-	msgs := memory.Get(groupID)
+	msgs := db.DB.Get(groupID)
 	if msgs == nil {
-		msgs = []memory.Message{}
+		msgs = []dto.Message{}
 	}
 	buff, err := json.Marshal(msgs)
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Leonardo-Antonio/chemaro/db"
 	"github.com/Leonardo-Antonio/chemaro/router"
 	"github.com/gorilla/mux"
 )
@@ -17,6 +18,8 @@ func main() {
 	var wait time.Duration
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15, "the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
 	flag.Parse()
+
+	db.RunRetriever()
 
 	port := os.Getenv("PORT")
 	r := mux.NewRouter()

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Leonardo-Antonio/chemaro/db/memory"
+	"github.com/Leonardo-Antonio/chemaro/db"
 )
 
 func ReportGroupsHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,7 +12,7 @@ func ReportGroupsHandler(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"message": "ok",
 		"data": map[string]any{
-			"groups": memory.GetAll(),
+			"groups": db.DB.GetAll(),
 		},
 	})
 	w.Header().Set("Content-Type", "application/json")
