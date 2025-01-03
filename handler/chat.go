@@ -40,14 +40,40 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		h.connections[groupID] = make(map[*websocket.Conn]bool)
 	}
 
+	// Verifica si el usuario ya tiene una conexión activa
+	for existingConn := range h.connections[groupID] {
+		if existingConn == conn {
+			conn.Close()
+			return
+		}
+	}
+
 	// Agrega la conexión al mapa de conexiones del grupo
 	h.connections[groupID][conn] = true
 
 	defer func() {
-		// Elimina la conexión del mapa cuando se cierra
 		delete(h.connections[groupID], conn)
 		conn.Close()
 	}()
+
+	// Mecanismo de ping/pong para detectar conexiones muertas
+	conn.SetPongHandler(func(appData string) error {
+		conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+		return nil
+	})
+	conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+
+	go func() {
+		for {
+			err := conn.WriteMessage(websocket.PingMessage, nil)
+			if err != nil {
+				conn.Close()
+				return
+			}
+			time.Sleep(50 * time.Second)
+		}
+	}()
+
 	// Lee los mensajes del cliente
 	for {
 		_, message, err := conn.ReadMessage()
