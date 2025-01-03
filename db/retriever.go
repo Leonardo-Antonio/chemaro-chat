@@ -42,7 +42,7 @@ func daemon(mx *sync.RWMutex, storage *dto.Storage) {
 		ticker.Stop()
 	}()
 
-	DB = New(DB_FILE, mx, storage)
+	DB = New(DB_MEMORY, mx, storage)
 
 	for {
 		select {

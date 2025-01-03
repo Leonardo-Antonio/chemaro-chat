@@ -43,6 +43,11 @@ func (h *WebSocketHandler) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	// Agrega la conexión al mapa de conexiones del grupo
 	h.connections[groupID][conn] = true
 
+	defer func() {
+		// Elimina la conexión del mapa cuando se cierra
+		delete(h.connections[groupID], conn)
+		conn.Close()
+	}()
 	// Lee los mensajes del cliente
 	for {
 		_, message, err := conn.ReadMessage()
